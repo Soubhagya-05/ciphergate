@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CipherGate | Login</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body data-page="login">
+    <main class="shell auth-shell">
+      <section class="hero-card glass-card">
+        <div class="hero-content">
+          <div class="hero-badge">Samsung One UI Inspired</div>
+          <h1>Welcome back to CipherGate</h1>
+          <p>
+            Sign in to monitor trust signals, recent activity, and secure sessions
+            across your devices.
+          </p>
+        </div>
+        <div class="hero-stack">
+          <div class="mini-glass-card">
+            <span class="mini-label">Trusted Session</span>
+            <strong>JWT guarded access</strong>
+            <small>15-minute expiration with protected routes</small>
+          </div>
+          <div class="mini-glass-card">
+            <span class="mini-label">Live Monitoring</span>
+            <strong>IP and device verification</strong>
+            <small>New environments are automatically flagged</small>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel-card form-card">
+        <div class="section-heading">
+          <span class="eyebrow">Secure Entry</span>
+          <h2>Login</h2>
+        </div>
+
+        <form id="loginForm" class="auth-form">
+          <label>
+            <span>Email</span>
+            <input type="email" name="email" placeholder="alex@ciphergate.io" required />
+          </label>
+          <label>
+            <span>Password</span>
+            <input type="password" name="password" placeholder="Your password" required />
+          </label>
+          <button type="submit" class="primary-btn">Authenticate</button>
+          <p class="form-message" id="formMessage"></p>
+        </form>
+
+        <div class="auth-footer-strip">
+          <div>
+            <span class="strip-label">Session Policy</span>
+            <strong>Zero-trust every 15 minutes</strong>
+          </div>
+          <div class="status-dot"></div>
+        </div>
+
+        <p class="helper-text">
+          Need an account?
+          <a href="/register.html">Create one now</a>
+        </p>
+      </section>
+    </main>
+
+    <script src="/script.js"></script>
+  </body>
+</html>

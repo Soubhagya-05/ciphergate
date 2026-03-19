@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CipherGate | Dashboard</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body data-page="dashboard">
+    <main class="shell dashboard-shell">
+      <header class="topbar glass-card">
+        <div class="topbar-main">
+          <div>
+            <span class="eyebrow">CipherGate Security Platform</span>
+            <h1>Zero Trust Authentication Dashboard</h1>
+            <p class="header-subcopy">
+              Premium monitoring for device trust, session intelligence, and suspicious access signals.
+            </p>
+          </div>
+          <div class="system-status" id="systemStatus">System Status: SECURE</div>
+          <nav class="quick-tabs" aria-label="Dashboard navigation">
+            <a class="quick-tab active" href="/dashboard.html">Overview</a>
+            <a class="quick-tab" href="/security.html">Activity</a>
+          </nav>
+        </div>
+        <div class="topbar-actions">
+          <a class="ghost-btn" href="/security.html">Security Activity</a>
+          <button class="ghost-btn" id="logoutBtn" type="button">Logout</button>
+        </div>
+      </header>
+
+      <section class="summary-strip">
+        <article class="summary-pill glass-card">
+          <span class="summary-label">Trust Mode</span>
+          <strong>Zero Trust Active</strong>
+        </article>
+        <article class="summary-pill glass-card">
+          <span class="summary-label">Session Type</span>
+          <strong>JWT Protected</strong>
+        </article>
+        <article class="summary-pill glass-card">
+          <span class="summary-label">Monitoring</span>
+          <strong>IP + Device Watch</strong>
+        </article>
+      </section>
+
+      <section class="alert-banner panel-card hidden" id="securityAlert"></section>
+
+      <section class="dashboard-grid">
+        <article class="panel-card profile-card">
+          <span class="eyebrow">Profile</span>
+          <h2 id="userName">Loading...</h2>
+          <p id="userEmail">Fetching account details</p>
+          <div class="profile-orb">
+            <span id="userInitial">C</span>
+          </div>
+        </article>
+
+        <article class="panel-card metric-card accent-card">
+          <span class="eyebrow">Security Status</span>
+          <h3 id="securityStatus">Checking trust signals</h3>
+          <p>Device reputation and IP monitoring are active.</p>
+        </article>
+
+        <article class="panel-card risk-card" id="riskCard">
+          <span class="eyebrow">Security Risk Score</span>
+          <div class="risk-score-wrap">
+            <h3><span id="riskScore">--</span><small>/ 100</small></h3>
+            <span class="risk-badge" id="riskLabel">Analyzing</span>
+          </div>
+          <p id="riskSummary">Assessing recent authentication patterns and device trust.</p>
+        </article>
+
+        <article class="panel-card metric-card">
+          <span class="eyebrow">Last Login</span>
+          <h3 id="lastLogin">--</h3>
+        </article>
+
+        <article class="panel-card metric-card">
+          <span class="eyebrow">Current Device</span>
+          <h3 id="currentDevice">--</h3>
+        </article>
+
+        <article class="panel-card metric-card">
+          <span class="eyebrow">Current IP</span>
+          <h3 id="currentIp">--</h3>
+        </article>
+
+        <article class="panel-card metric-card">
+          <span class="eyebrow">Location</span>
+          <h3 id="currentLocation">Locating...</h3>
+        </article>
+
+        <article class="panel-card session-card">
+          <div class="card-header-row">
+            <div>
+              <span class="eyebrow">Active Sessions</span>
+              <h3>Authenticated Endpoints</h3>
+            </div>
+            <button class="ghost-btn" id="terminateAllSessionsBtn" type="button">Terminate All Sessions</button>
+          </div>
+          <div class="session-list" id="activeSessionsList">
+            <p class="empty-state">No active sessions detected.</p>
+          </div>
+        </article>
+
+        <article class="panel-card status-detail-card">
+          <span class="eyebrow">Suspicious Login Explanation</span>
+          <h3 id="suspiciousTitle">Suspicious Login Detected</h3>
+          <p class="reason-label">Reason:</p>
+          <ul class="signal-list" id="suspiciousReasonList">
+            <li>Analyzing recent risk signals...</li>
+          </ul>
+        </article>
+
+        <article class="panel-card chart-card">
+          <span class="eyebrow">Security Score Trend</span>
+          <h3>Security Score Trend</h3>
+          <canvas id="securityScoreChart" height="140"></canvas>
+        </article>
+
+        <article class="panel-card timeline-card">
+          <span class="eyebrow">Security Timeline</span>
+          <h3>Recent Security Events</h3>
+          <div class="timeline-list" id="securityTimeline">
+            <p class="empty-state">No recent events recorded.</p>
+          </div>
+        </article>
+
+        <article class="panel-card info-card">
+          <span class="eyebrow">Session Window</span>
+          <h3>15-minute JWT expiry</h3>
+          <p>
+            Sessions automatically expire to reduce risk exposure in a
+            zero-trust environment.
+          </p>
+        </article>
+
+        <article class="panel-card recommendation-card">
+          <span class="eyebrow">Security Recommendations</span>
+          <h3>Actionable hardening guidance</h3>
+          <ul class="insight-list" id="recommendationList">
+            <li>Loading recommendations...</li>
+          </ul>
+        </article>
+      </section>
+    </main>
+
+    <script src="/script.js"></script>
+  </body>
+</html>

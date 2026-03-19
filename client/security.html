@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CipherGate | Security Activity</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body data-page="security">
+    <main class="shell dashboard-shell">
+      <header class="topbar glass-card">
+        <div class="topbar-main">
+          <div>
+            <span class="eyebrow">CipherGate Security Platform</span>
+            <h1>Zero Trust Authentication Dashboard</h1>
+            <p class="header-subcopy">
+              Security activity feeds, location insight, and status analysis for monitoring teams.
+            </p>
+          </div>
+          <nav class="quick-tabs" aria-label="Dashboard navigation">
+            <a class="quick-tab" href="/dashboard.html">Overview</a>
+            <a class="quick-tab active" href="/security.html">Activity</a>
+          </nav>
+        </div>
+        <div class="topbar-actions">
+          <a class="ghost-btn" href="/dashboard.html">Dashboard</a>
+          <button class="ghost-btn" id="logoutBtn" type="button">Logout</button>
+        </div>
+      </header>
+
+      <section class="summary-strip">
+        <article class="summary-pill glass-card">
+          <span class="summary-label">Audit Feed</span>
+          <strong>Recent 20 attempts</strong>
+        </article>
+        <article class="summary-pill glass-card">
+          <span class="summary-label">Anomaly Watch</span>
+          <strong>Suspicious sessions highlighted</strong>
+        </article>
+        <article class="summary-pill glass-card">
+          <span class="summary-label">Risk Rating</span>
+          <strong id="securityPageRisk">Analyzing</strong>
+        </article>
+      </section>
+
+      <section class="security-overview-grid">
+        <article class="panel-card timeline-card">
+          <span class="eyebrow">Security Timeline</span>
+          <h3>Recent Security Events</h3>
+          <div class="timeline-list" id="securityActivityTimeline">
+            <p class="empty-state">Loading recent timeline events...</p>
+          </div>
+        </article>
+
+        <article class="panel-card recommendation-card">
+          <span class="eyebrow">Security Recommendations</span>
+          <h3>Recommended analyst actions</h3>
+          <ul class="insight-list">
+            <li>Enable multi-factor authentication</li>
+            <li>Verify new device login</li>
+            <li>Review suspicious activity</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="panel-card table-panel">
+        <div class="section-heading">
+          <span class="eyebrow">Login Monitoring</span>
+          <h2>Recent Activity</h2>
+        </div>
+
+        <div class="table-wrap">
+          <table class="activity-table">
+            <thead>
+              <tr>
+                <th>Login Time</th>
+                <th>IP Address</th>
+                <th>Location</th>
+                <th>Device / Browser</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="securityLogsBody">
+              <tr>
+                <td colspan="5">Loading recent login attempts...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="/script.js"></script>
+  </body>
+</html>
