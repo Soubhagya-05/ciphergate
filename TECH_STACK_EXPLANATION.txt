@@ -1,0 +1,335 @@
+CipherGate – Full Tech Stack Explanation
+
+Project Summary
+
+CipherGate is a full-stack Zero Trust Authentication System built to demonstrate secure user registration, login monitoring, session control, suspicious login detection, and a modern security dashboard. The application combines a static frontend with a Node.js backend, MongoDB persistence, JWT-based session security, bcrypt password hashing, and client-side enhancements for location-aware monitoring.
+
+1. Frontend Stack
+
+HTML
+
+The frontend uses plain HTML for page structure. The project contains separate pages for registration, login, dashboard monitoring, and security activity review. This approach keeps the interface simple, lightweight, and easy to serve directly from Express without adding a frontend framework.
+
+Files:
+- client/register.html
+- client/login.html
+- client/dashboard.html
+- client/security.html
+
+Why HTML is used:
+- fast page loading
+- simple static delivery through Express
+- easy separation of screens
+- no build step required
+
+CSS
+
+The user interface styling is implemented in a shared stylesheet. The design follows a Samsung One UI-inspired visual language with rounded containers, glassmorphism surfaces, soft shadows, smooth hover motion, blue accent gradients, and responsive layout rules.
+
+File:
+- client/styles.css
+
+What CSS handles in this project:
+- page layout and spacing
+- responsive behavior for desktop and mobile
+- glass card styling and blur effects
+- dashboard card hierarchy
+- badges, tables, alerts, and session panels
+- transitions and hover interactions
+
+JavaScript
+
+The frontend logic is written in plain JavaScript. A single shared script handles authentication requests, token storage, dashboard rendering, security activity rendering, session termination actions, location lookup from IP geolocation, timeline updates, chart rendering, and periodic refresh behavior.
+
+File:
+- client/script.js
+
+What the frontend JavaScript does:
+- submits register and login forms
+- stores JWT tokens in localStorage
+- calls protected API routes
+- renders profile and security dashboard values
+- builds the security activity table
+- displays risk score and suspicious login reasons
+- draws the security score chart with Chart.js
+- manages terminate-session and terminate-all-session actions
+- fetches public IP geolocation data from ipapi.co
+
+Chart.js
+
+Chart.js is used on the dashboard to render the Security Score Trend graph. It helps visualize how the risk score changes over recent security events and login history.
+
+How it is used:
+- line chart for security score trend
+- live refresh from dashboard data
+- fallback demo trend when history is limited
+
+2. Backend Stack
+
+Node.js
+
+Node.js is the runtime used to execute the backend server. It allows the project to use JavaScript on both the frontend and backend, simplifying development and keeping the technology stack consistent.
+
+Why Node.js is used:
+- event-driven backend runtime
+- good fit for API servers
+- easy JSON handling
+- broad ecosystem for auth and database tooling
+
+Express
+
+Express is the backend web framework used to build the API and serve static frontend files. It routes requests for registration, login, dashboard data, security logs, and session termination features.
+
+Files:
+- server/server.js
+- server/routes/authRoutes.js
+- server/routes/userRoutes.js
+
+What Express handles:
+- JSON request parsing
+- route registration
+- static file serving for the client folder
+- API endpoints for auth and monitoring
+- route protection with middleware
+
+3. Database Stack
+
+MongoDB
+
+MongoDB is the database used to store users, login attempts, session-related tracking data, and security events. It is well suited for flexible security log records because different login events can carry additional metadata such as reasons, location, country code, or device details.
+
+Default connection:
+- mongodb://127.0.0.1:27017/ciphergate
+
+Why MongoDB is used:
+- document-oriented storage
+- flexible schema evolution
+- good fit for logs and activity history
+- easy integration with Mongoose
+
+Mongoose
+
+Mongoose is the ODM used to define schemas and interact with MongoDB. It provides structured models for users, login attempts, and security events while still using MongoDB underneath.
+
+Files:
+- server/models/User.js
+- server/models/LoginAttempt.js
+- server/models/SecurityEvent.js
+
+What Mongoose provides:
+- schema definitions
+- validation rules
+- timestamps
+- model-based queries
+- simpler document updates
+
+4. Authentication and Session Security
+
+JWT (JSON Web Token)
+
+JWT is used for session authentication. After a successful login, the backend signs a token that contains the user ID, token version, and session ID. The frontend stores that token in the browser and sends it with protected requests.
+
+Used in:
+- server/routes/authRoutes.js
+- server/middleware/authMiddleware.js
+- client/script.js
+
+How JWT is used here:
+- issued after successful login
+- expires in 15 minutes
+- protects dashboard and security-log endpoints
+- supports session invalidation using tokenVersion
+- supports per-session tracking using sessionId
+
+bcrypt
+
+bcrypt is used to hash passwords securely before storing them in the database and to compare hashes during login.
+
+Used in:
+- server/routes/authRoutes.js
+
+Why bcrypt is important:
+- prevents plain-text password storage
+- adds strong one-way hashing
+- protects user credentials if database data is exposed
+
+5. Security Monitoring Features
+
+Login Attempt Logging
+
+Every login attempt can be stored with:
+- login time
+- IP address
+- location
+- country code
+- device information
+- status
+- suspicious reasons
+
+Statuses used:
+- success
+- failure
+- suspicious
+
+This supports:
+- audit visibility
+- failed login tracking
+- suspicious login analysis
+- risk scoring
+
+Device Detection
+
+The backend derives device and browser details from the request User-Agent string. It identifies browser type, operating system, and device class, then creates a device label and device fingerprint ID.
+
+Examples:
+- Chrome on macOS
+- Edge on Windows
+- Mobile Safari on iOS
+
+This helps detect:
+- new device login
+- browser mismatch
+- abnormal session patterns
+
+IP and Location Tracking
+
+During login, the frontend calls the public IP geolocation API at:
+- https://ipapi.co/json/
+
+This returns:
+- ip
+- city
+- region
+- country_name
+- country_code
+
+The project combines these fields into a readable location string and stores the result with the login record. When the app detects localhost or private network addresses, it uses:
+- Local Network / Development Mode
+
+This supports:
+- dashboard location display
+- activity log location column
+- country flag display in the activity table
+
+Suspicious Login Detection
+
+The backend builds a reasons array when login anomalies are detected. Reasons can include:
+- New device detected
+- IP address changed
+- Browser fingerprint mismatch
+- Multiple failed login attempts
+
+These reasons are shown in the Suspicious Login Explanation card on the dashboard.
+
+Security Events Timeline
+
+The project stores higher-level monitoring events in a dedicated SecurityEvent model. Examples include:
+- Authentication success
+- Failed login attempt
+- New device login detected
+- JWT token issued
+- Session created
+- Session terminated
+- All sessions terminated
+
+These events feed the Recent Security Events timeline in the dashboard and activity view.
+
+6. Risk Scoring System
+
+The dashboard calculates a security risk score starting from 100 and deducts points for risky signals.
+
+Current deduction model:
+- new device detected: minus 15
+- IP change: minus 10
+- failed login attempt: minus 5
+
+Risk levels:
+- 80 to 100: LOW
+- 50 to 79: MEDIUM
+- below 50: HIGH
+
+This score is used in:
+- Security Risk Score card
+- system status evaluation
+- score trend graph
+
+7. Session Management
+
+Active sessions are tracked in the user model. Each session stores:
+- sessionId
+- device
+- deviceId
+- IP address
+- login time
+- last seen time
+
+The dashboard shows:
+- current session
+- additional sessions
+- login times
+- session status
+
+Supported actions:
+- terminate a single session
+- terminate all sessions
+
+8. API Layer
+
+Key API endpoints in the project:
+
+- POST /register
+  Creates a new user with a bcrypt-hashed password.
+
+- POST /login
+  Verifies credentials, detects suspicious conditions, logs the attempt, records security events, and returns a JWT token.
+
+- GET /dashboard
+  Returns user profile info, risk score, session data, security status, suspicious reasons, and timeline data.
+
+- GET /security-logs
+  Returns login attempt history and timeline information for the security activity screen.
+
+- POST /terminate-session
+  Removes a specific active session.
+
+- POST /terminate-all-sessions
+  Revokes every active session for the current user.
+
+9. Project Architecture
+
+Root entry:
+- server.js
+
+Backend:
+- server/server.js
+- server/routes/
+- server/models/
+- server/middleware/
+
+Frontend:
+- client/*.html
+- client/styles.css
+- client/script.js
+
+How the architecture works:
+- Express serves the client pages and exposes the API
+- frontend pages call the API using fetch
+- JWT secures protected routes
+- MongoDB stores users, sessions, login logs, and security events
+- dashboard views render data returned from the backend
+
+10. Why This Stack Fits CipherGate
+
+This stack is a strong fit for CipherGate because it balances simplicity, speed, and security:
+
+- HTML/CSS/JavaScript keeps the frontend lightweight and easy to deploy
+- Node.js and Express provide a fast API layer for auth and monitoring
+- MongoDB and Mongoose handle structured user data and flexible security logs
+- bcrypt secures passwords properly
+- JWT enables short-lived, stateless session auth
+- Chart.js adds dashboard analytics without introducing a heavy frontend framework
+- ipapi.co adds location awareness for security visibility
+
+Final Summary
+
+CipherGate uses a practical full-stack JavaScript architecture focused on authentication security, login monitoring, suspicious activity detection, and a modern dashboard experience. The technology stack is intentionally straightforward but powerful enough to demonstrate real-world Zero Trust security concepts such as session control, anomaly detection, IP-aware monitoring, risk scoring, and activity auditing.
