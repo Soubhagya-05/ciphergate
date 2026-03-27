@@ -1,3 +1,5 @@
+require("dotenv").config();   // 👈 ADD THIS
+
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
@@ -7,8 +9,7 @@ const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const MONGO_URI =
-  process.env.MONGO_URI || "mongodb://127.0.0.1:27017/ciphergate";
+const MONGO_URI = process.env.MONGO_URI;
 
 app.set("trust proxy", 1);
 app.use(express.json());
