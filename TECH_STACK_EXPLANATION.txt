@@ -2,7 +2,7 @@ CipherGate – Full Tech Stack Explanation
 
 Project Summary
 
-CipherGate is a full-stack Zero Trust Authentication System built to demonstrate secure user registration, login monitoring, session control, suspicious login detection, and a modern security dashboard. The application combines a static frontend with a Node.js backend, MongoDB persistence, JWT-based session security, bcrypt password hashing, and client-side enhancements for location-aware monitoring.
+CipherGate is a full-stack Zero Trust Authentication System built to demonstrate secure user registration, login monitoring, session control, suspicious login detection, and a modern security dashboard. The application combines a static frontend with a Node.js backend, MongoDB persistence, JWT-based session security, bcryptjs password hashing, and client-side enhancements for location-aware monitoring.
 
 1. Frontend Stack
 
@@ -141,14 +141,14 @@ How JWT is used here:
 - supports session invalidation using tokenVersion
 - supports per-session tracking using sessionId
 
-bcrypt
+bcryptjs
 
-bcrypt is used to hash passwords securely before storing them in the database and to compare hashes during login.
+bcryptjs is used to hash passwords securely before storing them in the database and to compare hashes during login.
 
 Used in:
 - server/routes/authRoutes.js
 
-Why bcrypt is important:
+Why bcryptjs is important:
 - prevents plain-text password storage
 - adds strong one-way hashing
 - protects user credentials if database data is exposed
@@ -278,7 +278,7 @@ Supported actions:
 Key API endpoints in the project:
 
 - POST /register
-  Creates a new user with a bcrypt-hashed password.
+  Creates a new user with a bcryptjs-hashed password.
 
 - POST /login
   Verifies credentials, detects suspicious conditions, logs the attempt, records security events, and returns a JWT token.
@@ -325,7 +325,7 @@ This stack is a strong fit for CipherGate because it balances simplicity, speed,
 - HTML/CSS/JavaScript keeps the frontend lightweight and easy to deploy
 - Node.js and Express provide a fast API layer for auth and monitoring
 - MongoDB and Mongoose handle structured user data and flexible security logs
-- bcrypt secures passwords properly
+- bcryptjs secures passwords properly
 - JWT enables short-lived, stateless session auth
 - Chart.js adds dashboard analytics without introducing a heavy frontend framework
 - ipapi.co adds location awareness for security visibility

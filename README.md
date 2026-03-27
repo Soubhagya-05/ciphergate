@@ -1,12 +1,12 @@
 # CipherGate - Zero Trust Authentication System
 
-CipherGate is a full-stack web application that demonstrates a zero-trust authentication workflow using Node.js, Express, MongoDB, JWT, bcrypt, and a Samsung One UI-inspired frontend. Users can register, log in, review their dashboard, and inspect recent security activity with device and IP-aware login monitoring.
+CipherGate is a full-stack web application that demonstrates a zero-trust authentication workflow using Node.js, Express, MongoDB, JWT, bcryptjs, and a Samsung One UI-inspired frontend. Users can register, log in, review their dashboard, and inspect recent security activity with device and IP-aware login monitoring.
 
 ## Project Overview
 
 CipherGate protects access with:
 
-- bcrypt password hashing before user data is stored
+- bcryptjs password hashing before user data is stored
 - JWT-based authentication with a 15-minute session lifetime
 - login attempt logging for success, failure, and suspicious sessions
 - device detection and IP monitoring to identify unfamiliar sign-ins
@@ -34,7 +34,7 @@ CipherGate protects access with:
 
 - Express API for auth and protected data endpoints
 - JWT middleware for session validation
-- bcrypt for password hashing and credential comparison
+- bcryptjs for password hashing and credential comparison
 - MongoDB via Mongoose for user and login-attempt storage
 
 ### Database Models
