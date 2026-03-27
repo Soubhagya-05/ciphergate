@@ -103,6 +103,7 @@ node server.js
 
 - Install packages: `npm install`
 - Run the server: `node server.js`
+- Health check: `GET /health`
 
 ## API Routes
 
@@ -110,6 +111,35 @@ node server.js
 - `POST /login`
 - `GET /dashboard`
 - `GET /security-logs`
+- `POST /terminate-session`
+- `POST /terminate-all-sessions`
+- `GET /health`
+
+## Environment Variables
+
+Create a `.env` file if you want to override defaults:
+
+```bash
+PORT=3000
+MONGO_URI=mongodb://127.0.0.1:27017/ciphergate
+JWT_SECRET=replace-with-a-strong-secret
+NODE_ENV=development
+```
+
+For production hosting, you should always set:
+
+- `MONGO_URI`
+- `JWT_SECRET`
+- `PORT` if your hosting platform requires it
+
+## Hosting Readiness Notes
+
+- The app already supports `process.env.PORT`, so it can run on common Node hosting platforms.
+- The app already supports `process.env.MONGO_URI`, so you can connect to MongoDB Atlas or any hosted MongoDB instance.
+- Express is configured to trust proxy headers, which helps with correct IP handling on hosted platforms.
+- A `/health` endpoint is included for uptime checks and deployment probes.
+- Use a strong `JWT_SECRET` in production.
+- Do not commit `.env` or `node_modules`; a `.gitignore` file is included.
 
 ## Notes
 

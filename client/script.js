@@ -496,11 +496,11 @@ async function handleSecurityPage() {
 
         return `
           <tr>
-            <td>${escapeHtml(formatDate(entry.loginTime))}</td>
-            <td>${escapeHtml(entry.ipAddress)}</td>
-            <td>${escapeHtml(locationLabel)}</td>
-            <td>${escapeHtml(entry.device)}</td>
-            <td><span class="status-pill ${statusClass}">${escapeHtml(entry.status.toUpperCase())}</span></td>
+            <td data-label="Login Time">${escapeHtml(formatDate(entry.loginTime))}</td>
+            <td data-label="IP Address">${escapeHtml(entry.ipAddress)}</td>
+            <td data-label="Location">${escapeHtml(locationLabel)}</td>
+            <td data-label="Device / Browser">${escapeHtml(entry.device)}</td>
+            <td data-label="Status"><span class="status-pill ${statusClass}">${escapeHtml(entry.status.toUpperCase())}</span></td>
           </tr>
         `;
       })
