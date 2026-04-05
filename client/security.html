@@ -8,6 +8,9 @@
   </head>
   <body data-page="security">
     <main class="shell dashboard-shell">
+      <div class="theme-toggle-wrap">
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch theme"></button>
+      </div>
       <header class="topbar glass-card">
         <div class="topbar-main">
           <div>
@@ -31,11 +34,11 @@
       <section class="summary-strip">
         <article class="summary-pill glass-card">
           <span class="summary-label">Audit Feed</span>
-          <strong>Recent 20 attempts</strong>
+          <strong id="auditFeedCount">Recent 0 attempts</strong>
         </article>
         <article class="summary-pill glass-card">
           <span class="summary-label">Anomaly Watch</span>
-          <strong>Suspicious sessions highlighted</strong>
+          <strong id="anomalyWatchCount">0 suspicious events</strong>
         </article>
         <article class="summary-pill glass-card">
           <span class="summary-label">Risk Rating</span>

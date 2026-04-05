@@ -152,17 +152,66 @@ function buildTrend(attempts) {
   ];
 }
 
-function buildTimeline(events) {
-  return events.slice(0, 8).map((entry) => ({
-    id: entry._id.toString(),
-    time: new Date(entry.eventTime).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit"
-    }),
+function formatTimelineTime(dateValue) {
+  return new Date(dateValue).toLocaleString([], {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+}
+
+function buildTimeline(events, attempts = []) {
+  const mappedEvents = events.map((entry) => ({
+    id: `event-${entry._id.toString()}`,
+    sortTime: new Date(entry.eventTime).getTime(),
+    time: formatTimelineTime(entry.eventTime),
     title: entry.title,
     detail: entry.detail,
     status: entry.status === "info" ? "success" : entry.status
   }));
+
+  const mappedAttempts = attempts.map((entry) => {
+    const statusLabel =
+      entry.status === "success"
+        ? "Authentication success"
+        : entry.status === "suspicious"
+          ? "Suspicious login detected"
+          : "Failed login attempt";
+
+    return {
+      id: `attempt-${entry._id.toString()}`,
+      sortTime: new Date(entry.loginTime).getTime(),
+      time: formatTimelineTime(entry.loginTime),
+      title: statusLabel,
+      detail: `${entry.device} · ${entry.ipAddress} · ${entry.location || "Location unavailable"}`,
+      status: entry.status
+    };
+  });
+
+  return [...mappedEvents, ...mappedAttempts]
+    .sort((a, b) => b.sortTime - a.sortTime)
+    .slice(0, 12)
+    .map(({ sortTime, ...entry }) => entry);
+}
+
+function buildAttemptSummary(attempts) {
+  const summary = {
+    total: attempts.length,
+    success: 0,
+    suspicious: 0,
+    failed: 0
+  };
+
+  for (const attempt of attempts) {
+    if (attempt.status === "success") summary.success += 1;
+    else if (attempt.status === "suspicious") summary.suspicious += 1;
+    else if (attempt.status === "failure") summary.failed += 1;
+  }
+
+  return summary;
 }
 
 function buildActiveSessions(user, currentSessionId) {
@@ -211,7 +260,7 @@ router.get("/dashboard", authMiddleware, async (req, res) => {
     const latestSuspicious = attempts.find((entry) => entry.status === "suspicious");
     const risk = buildRiskDetails(attempts);
     const trend = buildTrend(attempts);
-    const timeline = buildTimeline(events);
+    const timeline = buildTimeline(events, attempts);
     const activeSessions = buildActiveSessions(req.user, req.sessionId);
     const currentLocation = latestAttempt?.location || "Location unavailable";
     const systemStatus = latestSuspicious || risk.label === "HIGH" ? "RISK DETECTED" : "SECURE";
@@ -275,8 +324,9 @@ router.get("/security-logs", authMiddleware, async (req, res) => {
 
     return res.json({
       logs: attempts,
-      timeline: buildTimeline(events),
-      risk: buildRiskDetails(attempts)
+      timeline: buildTimeline(events, attempts),
+      risk: buildRiskDetails(attempts),
+      summary: buildAttemptSummary(attempts)
     });
   } catch (error) {
     return res.status(500).json({ message: "Could not load security logs." });

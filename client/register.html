@@ -8,6 +8,9 @@
   </head>
   <body data-page="register">
     <main class="shell auth-shell">
+      <div class="theme-toggle-wrap">
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch theme"></button>
+      </div>
       <section class="hero-card glass-card">
         <div class="hero-content">
           <div class="hero-badge">CipherGate</div>
@@ -48,7 +51,10 @@
           </label>
           <label>
             <span>Password</span>
-            <input type="password" name="password" placeholder="Minimum 8 characters" required />
+            <div class="password-field">
+              <input type="password" name="password" placeholder="Minimum 8 characters" required />
+              <button type="button" class="password-toggle" aria-label="Show password" aria-pressed="false">Show</button>
+            </div>
           </label>
           <button type="submit" class="primary-btn">Create Secure Account</button>
           <p class="form-message" id="formMessage"></p>

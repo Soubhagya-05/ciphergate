@@ -1,4 +1,6 @@
 const TOKEN_KEY = "ciphergateToken";
+const VERIFICATION_EMAIL_KEY = "ciphergateVerificationEmail";
+const THEME_KEY = "ciphergateTheme";
 let securityScoreChart;
 let dashboardRefreshTimer;
 let securityRefreshTimer;
@@ -15,10 +17,82 @@ function clearToken() {
   localStorage.removeItem(TOKEN_KEY);
 }
 
+function saveVerificationEmail(email) {
+  localStorage.setItem(VERIFICATION_EMAIL_KEY, email);
+}
+
+function getVerificationEmail() {
+  return localStorage.getItem(VERIFICATION_EMAIL_KEY);
+}
+
+function clearVerificationEmail() {
+  localStorage.removeItem(VERIFICATION_EMAIL_KEY);
+}
+
+function getPreferredTheme() {
+  const savedTheme = localStorage.getItem(THEME_KEY);
+  if (savedTheme === "light" || savedTheme === "dark") {
+    return savedTheme;
+  }
+
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function applyTheme(theme) {
+  document.body.dataset.theme = theme;
+  localStorage.setItem(THEME_KEY, theme);
+
+  const toggle = document.getElementById("themeToggle");
+  if (toggle) {
+    const modeGlyph = theme === "dark" ? "☀" : "☾";
+    const modeLabel = theme === "dark" ? "Light theme" : "Dark theme";
+    toggle.innerHTML = `
+      <span class="theme-toggle-mark" aria-hidden="true">CG</span>
+      <span class="theme-toggle-copy">
+        <strong>CipherGate</strong>
+        <small>${modeLabel}</small>
+      </span>
+      <span class="theme-toggle-glyph" aria-hidden="true">${modeGlyph}</span>
+    `;
+    toggle.setAttribute("aria-label", `Switch to ${modeLabel.toLowerCase()}`);
+  }
+}
+
+function initializeThemeToggle() {
+  applyTheme(getPreferredTheme());
+
+  const toggle = document.getElementById("themeToggle");
+  if (!toggle || toggle.dataset.bound === "true") return;
+
+  toggle.dataset.bound = "true";
+  toggle.addEventListener("click", () => {
+    const currentTheme = document.body.dataset.theme === "dark" ? "dark" : "light";
+    applyTheme(currentTheme === "dark" ? "light" : "dark");
+  });
+}
+
 function setMessage(element, message, type) {
   if (!element) return;
   element.textContent = message;
   element.className = `form-message ${type || ""}`.trim();
+}
+
+function initializePasswordToggles() {
+  document.querySelectorAll(".password-field").forEach((field) => {
+    const input = field.querySelector("input");
+    const button = field.querySelector(".password-toggle");
+
+    if (!input || !button || button.dataset.bound === "true") return;
+
+    button.dataset.bound = "true";
+    button.addEventListener("click", () => {
+      const isVisible = input.type === "text";
+      input.type = isVisible ? "password" : "text";
+      button.textContent = isVisible ? "Show" : "Hide";
+      button.setAttribute("aria-label", isVisible ? "Show password" : "Hide password");
+      button.setAttribute("aria-pressed", String(!isVisible));
+    });
+  });
 }
 
 async function apiFetch(url, options = {}) {
@@ -401,12 +475,115 @@ async function handleLoginPage() {
       });
 
       saveToken(data.token);
-      setMessage(message, data.message || "Login successful.", "success");
+      if (data.requiresVerification) {
+        saveVerificationEmail(payload.email || "");
+        setMessage(message, data.message || "Verification required.", "success");
+        setTimeout(() => {
+          window.location.href = "/verify-session.html";
+        }, 900);
+      } else {
+        clearVerificationEmail();
+        setMessage(message, data.message || "Login successful.", "success");
+        setTimeout(() => {
+          window.location.href = "/dashboard.html";
+        }, 900);
+      }
+    } catch (error) {
+      setMessage(message, error.message, "error");
+    }
+  });
+}
+
+async function handleVerifySessionPage() {
+  if (!getToken()) {
+    window.location.href = "/login.html";
+    return;
+  }
+
+  const form = document.getElementById("verifySessionForm");
+  const message = document.getElementById("verifySessionMessage");
+  const emailEl = document.getElementById("verificationEmail");
+
+  if (emailEl) {
+    emailEl.textContent = getVerificationEmail() || "your registered email";
+  }
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const payload = Object.fromEntries(new FormData(form).entries());
+
+    try {
+      const data = await apiFetch("/verify-session", {
+        method: "POST",
+        body: JSON.stringify({ otp: payload.otp })
+      });
+
+      saveToken(data.token);
+      clearVerificationEmail();
+      setMessage(message, data.message || "Session verified.", "success");
+      form.reset();
+
       setTimeout(() => {
         window.location.href = "/dashboard.html";
       }, 900);
     } catch (error) {
+      if (error.status === 401) {
+        clearToken();
+        clearVerificationEmail();
+        window.location.href = "/login.html";
+        return;
+      }
+
       setMessage(message, error.message, "error");
+    }
+  });
+}
+
+async function handleForgotPasswordPage() {
+  const requestForm = document.getElementById("requestOtpForm");
+  const requestMessage = document.getElementById("requestOtpMessage");
+  const resetForm = document.getElementById("resetPasswordForm");
+  const resetMessage = document.getElementById("resetPasswordMessage");
+
+  requestForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const payload = Object.fromEntries(new FormData(requestForm).entries());
+
+    try {
+      const data = await apiFetch("/request-password-reset", {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+
+      setMessage(requestMessage, data.message, "success");
+
+      const resetEmailInput = resetForm?.querySelector('input[name="email"]');
+      if (resetEmailInput) {
+        resetEmailInput.value = payload.email || "";
+      }
+    } catch (error) {
+      setMessage(requestMessage, error.message, "error");
+    }
+  });
+
+  resetForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const payload = Object.fromEntries(new FormData(resetForm).entries());
+
+    try {
+      const data = await apiFetch("/reset-password", {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+
+      setMessage(resetMessage, data.message, "success");
+      resetForm.reset();
+
+      setTimeout(() => {
+        window.location.href = "/login.html";
+      }, 1500);
+    } catch (error) {
+      setMessage(resetMessage, error.message, "error");
     }
   });
 }
@@ -446,6 +623,8 @@ async function handleDashboardPage() {
     if (error.status === 401) {
       clearToken();
       window.location.href = "/login.html";
+    } else if (error.status === 403) {
+      window.location.href = "/verify-session.html";
     }
   }
 }
@@ -469,6 +648,8 @@ async function handleSecurityPage() {
 
   const body = document.getElementById("securityLogsBody");
   const pageRisk = document.getElementById("securityPageRisk");
+  const auditFeedCount = document.getElementById("auditFeedCount");
+  const anomalyWatchCount = document.getElementById("anomalyWatchCount");
 
   try {
     const data = await apiFetch("/security-logs");
@@ -476,6 +657,14 @@ async function handleSecurityPage() {
     renderTimeline(document.getElementById("securityActivityTimeline"), data.timeline || []);
     if (pageRisk && data.risk) {
       pageRisk.textContent = `${data.risk.score}/100 · ${data.risk.label}`;
+    }
+    if (auditFeedCount) {
+      const totalAttempts = data.summary?.total ?? rows.length;
+      auditFeedCount.textContent = `${totalAttempts} recent attempt${totalAttempts === 1 ? "" : "s"}`;
+    }
+    if (anomalyWatchCount) {
+      const suspiciousCount = data.summary?.suspicious ?? rows.filter((entry) => entry.status === "suspicious").length;
+      anomalyWatchCount.textContent = `${suspiciousCount} suspicious event${suspiciousCount === 1 ? "" : "s"}`;
     }
 
     if (!rows.length) {
@@ -509,6 +698,11 @@ async function handleSecurityPage() {
     if (error.status === 401) {
       clearToken();
       window.location.href = "/login.html";
+      return;
+    }
+
+    if (error.status === 403) {
+      window.location.href = "/verify-session.html";
       return;
     }
 
@@ -582,6 +776,8 @@ function bindLogout() {
 
 document.addEventListener("DOMContentLoaded", () => {
   const page = document.body.dataset.page;
+  initializeThemeToggle();
+  initializePasswordToggles();
   bindLogout();
   bindSessionTermination();
   bindTerminateAllSessions();
@@ -589,6 +785,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (page === "register") handleRegisterPage();
   if (page === "login") handleLoginPage();
+  if (page === "forgot-password") handleForgotPasswordPage();
+  if (page === "verify-session") handleVerifySessionPage();
   if (page === "dashboard") handleDashboardPage();
   if (page === "security") handleSecurityPage();
 });

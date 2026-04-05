@@ -15,6 +15,7 @@ const activeSessionSchema = new mongoose.Schema(
     device: { type: String, required: true },
     deviceId: { type: String, required: true },
     ipAddress: { type: String, required: true },
+    verified: { type: Boolean, default: true },
     loginTime: { type: Date, default: Date.now },
     lastSeenAt: { type: Date, default: Date.now }
   },
@@ -28,6 +29,15 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     lastLoginAt: { type: Date, default: null },
     tokenVersion: { type: Number, default: 0 },
+    loginFailedAttempts: { type: Number, default: 0 },
+    loginLockUntil: { type: Date, default: null },
+    passwordResetOtpHash: { type: String, default: null },
+    passwordResetOtpExpires: { type: Date, default: null },
+    passwordResetRequestedAt: { type: Date, default: null },
+    passwordResetAttempts: { type: Number, default: 0 },
+    verificationOtpHash: { type: String, default: null },
+    verificationOtpExpires: { type: Date, default: null },
+    verificationSessionId: { type: String, default: null },
     knownIps: [{ type: String }],
     knownDevices: [knownDeviceSchema],
     activeSessions: [activeSessionSchema]

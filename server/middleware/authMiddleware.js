@@ -31,6 +31,12 @@ async function authMiddleware(req, res, next) {
       return res.status(401).json({ message: "Session is no longer active." });
     }
 
+    if (decoded.verified === false || activeSession.verified === false) {
+      return res.status(403).json({
+        message: "Session not verified. Please verify using OTP."
+      });
+    }
+
     activeSession.lastSeenAt = new Date();
     await user.save();
 

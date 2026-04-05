@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CipherGate | Verify Session</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body data-page="verify-session">
+    <main class="shell auth-shell">
+      <div class="theme-toggle-wrap">
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch theme"></button>
+      </div>
+      <section class="hero-card glass-card">
+        <div class="hero-content">
+          <div class="hero-badge">Step-Up Authentication</div>
+          <h1>Verify your new session</h1>
+          <p>
+            CipherGate detected a new device or IP address. Enter the OTP sent to
+            <strong id="verificationEmail">your registered email</strong> to finish sign-in.
+          </p>
+        </div>
+        <div class="hero-stack">
+          <div class="mini-glass-card">
+            <span class="mini-label">Temporary Access</span>
+            <strong>Unverified session expires in 15 minutes</strong>
+            <small>Protected routes stay locked until OTP verification succeeds.</small>
+          </div>
+          <div class="mini-glass-card">
+            <span class="mini-label">Zero Trust</span>
+            <strong>New environment detected</strong>
+            <small>Verification protects your account from unfamiliar sign-ins.</small>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel-card form-card reset-flow-card">
+        <div class="section-heading">
+          <span class="eyebrow">Session Verification</span>
+          <h2>Enter OTP</h2>
+        </div>
+
+        <form id="verifySessionForm" class="auth-form compact-form">
+          <label>
+            <span>Verification Code</span>
+            <input type="text" name="otp" inputmode="numeric" maxlength="6" placeholder="6-digit OTP" required />
+          </label>
+          <button type="submit" class="primary-btn">Verify Session</button>
+          <p class="form-message" id="verifySessionMessage"></p>
+          <p class="helper-text otp-note">
+            This verification code expires automatically after 15 minutes.
+          </p>
+        </form>
+
+        <p class="helper-text">
+          Use a different account?
+          <a href="/login.html">Return to login</a>
+        </p>
+      </section>
+    </main>
+
+    <script src="/script.js"></script>
+  </body>
+</html>

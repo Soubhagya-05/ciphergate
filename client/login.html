@@ -8,6 +8,9 @@
   </head>
   <body data-page="login">
     <main class="shell auth-shell">
+      <div class="theme-toggle-wrap">
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch theme"></button>
+      </div>
       <section class="hero-card glass-card">
         <div class="hero-content">
           <div class="hero-badge">Samsung One UI Inspired</div>
@@ -44,7 +47,10 @@
           </label>
           <label>
             <span>Password</span>
-            <input type="password" name="password" placeholder="Your password" required />
+            <div class="password-field">
+              <input type="password" name="password" placeholder="Your password" required />
+              <button type="button" class="password-toggle" aria-label="Show password" aria-pressed="false">Show</button>
+            </div>
           </label>
           <button type="submit" class="primary-btn">Authenticate</button>
           <p class="form-message" id="formMessage"></p>
@@ -61,6 +67,10 @@
         <p class="helper-text">
           Need an account?
           <a href="/register.html">Create one now</a>
+        </p>
+        <p class="helper-text">
+          Forgot your password?
+          <a href="/forgot-password.html">Reset it with OTP</a>
         </p>
       </section>
     </main>
